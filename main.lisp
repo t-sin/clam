@@ -1,8 +1,9 @@
 (in-package :cl-user)
-(defpackage :clam/main
+(defpackage :clam
+  (:nicknames :clam/main)
   (:use :cl)
   (:export :clam-loop))
 (in-package :clam/main)
 
 (defun clam-loop ()
-  nil)
+  (format t "CLAMCHOWDEEEERRRR!!!!!~%"))
