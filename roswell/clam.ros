@@ -7,9 +7,9 @@ exec ros -Q -- $0 "$@"
   (ros:ensure-asdf)
   #+quicklisp (ql:quickload '(:clam) :silent t))
 
-(defpackage :ros.script.roswell/clam.3705385447
+(defpackage :ros.script.clam.3705385447
   (:use :cl))
-(in-package :ros.script.roswell/clam.3705385447)
+(in-package :ros.script.clam.3705385447)
 
 (defun main (&rest argv)
   (declare (ignorable argv))
