@@ -1,8 +1,8 @@
 (in-package :cl-user)
 (defpackage :clam/main
   (:use :cl)
-  (:export :shell-loop))
+  (:export :clam-loop))
 (in-package :clam/main)
 
-(defun shell-loop ()
+(defun clam-loop ()
   nil)
