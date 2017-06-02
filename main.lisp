@@ -6,4 +6,4 @@
 (in-package :clam/main)
 
 (defun clam-loop ()
-  (format t "CLAMCHOWDEEEERRRR!!!!!~%"))
+  (format t "Common Lisp is Actually Marvelous!~%"))
