@@ -43,19 +43,30 @@
   (show-prompt)
   (tokenize (read-line)))
 
-(defun $exit (&rest args) nil)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defparameter *clam-built-in-commands* nil)
+  (defmacro define-command (name &body body)
+    (let ((%name (intern (string-downcase (symbol-name name)) :keyword)))
+      `(let ((command (cons ',%name #'(lambda (&rest args)
+                                        (declare (ignorable args))
+                                        ,@body))))
+         (pushnew command
+                  *clam-built-in-commands*
+                  :key #'car)))))
 
-(defvar *clam-built-in-commands*
-  `(("exit" ,#'$exit)))
+(defun get-command (name)
+  (cdr (find name *clam-built-in-commands* :key #'car)))
+
+(define-command exit nil)
 
 (defun clam-eval (args)
   (let* ((args (coerce args 'list))
          (ret t)
-         (built-in-command (find (first args) *clam-built-in-commands* :test #'string= :key #'first)))
+         (built-in-command (get-command (intern (string-downcase (first args)) :keyword))))
     (if built-in-command
         (progn
           (format t "built-in: ~s ~s~%" built-in-command (rest args))
-          (setf ret (apply (second built-in-command) (rest args))))
+          (setf ret (apply built-in-command (rest args))))
         (format t "external: ~a ~s~%" (first args) (rest args)))
     ret))
 
