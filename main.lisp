@@ -59,21 +59,23 @@
 
 (define-command exit nil)
 
+(defvar +clam-do-nothing+ (gensym))
+(define-command |:| +clam-do-nothing+)
+
 (defun clam-eval (args)
   (let* ((args (coerce args 'list))
          (ret t)
          (built-in-command (get-command (intern (string-downcase (first args)) :keyword))))
     (if built-in-command
-        (progn
-          (format t "built-in: ~s ~s~%" built-in-command (rest args))
-          (setf ret (apply built-in-command (rest args))))
+        (setf ret (apply built-in-command (rest args)))
         (format t "external: ~a ~s~%" (first args) (rest args)))
     ret))
 
 (defun clam-print (object)
   (when object
-    (format *standard-output* "~s" object)
-    (finish-output *standard-output*)
+    (unless (eq object +clam-do-nothing+)
+      (format *standard-output* "~s" object)
+      (finish-output *standard-output*))
     object))
 
 (defun clam-shell ()
