@@ -80,5 +80,8 @@
 
 (defun clam-shell ()
   (loop
-     :for status := (clam-print (clam-eval (clam-read)))
+     :for status :=  (handler-case
+                         (clam-print (clam-eval (clam-read)))
+                       (end-of-file ()
+                         (return-from clam-shell)))
      :while status))
