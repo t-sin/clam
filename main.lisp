@@ -43,8 +43,10 @@
   (show-prompt)
   (tokenize (read-line)))
 
+(defun $exit (&rest args) nil)
+
 (defvar *clam-built-in-commands*
-  `(("exit" ,#'(lambda (&rest args) nil))))
+  `(("exit" ,#'$exit)))
 
 (defun clam-eval (args)
   (let* ((args (coerce args 'list))
