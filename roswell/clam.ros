@@ -13,5 +13,5 @@ exec ros -Q -- $0 "$@"
 
 (defun main (&rest argv)
   (declare (ignorable argv))
-  (clam:clam-loop))
+  (clam:clam-shell))
 ;;; vim: set ft=lisp lisp:

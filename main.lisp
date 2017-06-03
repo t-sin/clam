@@ -2,7 +2,7 @@
 (defpackage :clam
   (:nicknames :clam/main)
   (:use :cl)
-  (:export :clam-loop))
+  (:export :clam-shell))
 (in-package :clam/main)
 
 (defun show-prompt ()
@@ -63,7 +63,7 @@
     (finish-output *standard-output*)
     object))
 
-(defun clam-loop ()
+(defun clam-shell ()
   (loop
      :for status := (clam-print (clam-eval (clam-read)))
      :while status))
