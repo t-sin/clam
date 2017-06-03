@@ -58,7 +58,7 @@
     ret))
 
 (defun clam-print (object)
-  (progn
+  (when object
     (format *standard-output* "~s" object)
     (finish-output *standard-output*)
     object))
