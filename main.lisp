@@ -44,15 +44,17 @@
   (tokenize (read-line)))
 
 (defvar *clam-built-in-commands*
-  '())
+  `(("exit" ,#'(lambda (&rest args) nil))))
 
 (defun clam-eval (args)
   (let* ((args (coerce args 'list))
-         (command (first args))
-         (ret t))
-    (if (find command *clam-built-in-commands* :test #'string= :key #'first)
-        (format t "built-in: ~a ~s~%" command (rest args))
-        (format t "external: ~a ~s~%" command (rest args)))
+         (ret t)
+         (built-in-command (find (first args) *clam-built-in-commands* :test #'string= :key #'first)))
+    (if built-in-command
+        (progn
+          (format t "built-in: ~s ~s~%" built-in-command (rest args))
+          (setf ret (apply (second built-in-command) (rest args))))
+        (format t "external: ~a ~s~%" (first args) (rest args)))
     ret))
 
 (defun clam-print (object)
