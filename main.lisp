@@ -43,8 +43,17 @@
   (show-prompt)
   (tokenize (read-line)))
 
+(defvar *clam-built-in-commands*
+  '())
+
 (defun clam-eval (args)
-  args)
+  (let* ((args (coerce args 'list))
+         (command (first args))
+         (ret t))
+    (if (find command *clam-built-in-commands* :test #'string= :key #'first)
+        (format t "built-in: ~a ~s~%" command (rest args))
+        (format t "external: ~a ~s~%" command (rest args)))
+    ret))
 
 (defun clam-print (object)
   (progn
