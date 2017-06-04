@@ -69,7 +69,11 @@
          (built-in-command (get-command (intern (string-downcase (first args)) :keyword))))
     (if built-in-command
         (setf ret (apply built-in-command (rest args)))
-        (format t "external: ~a ~s~%" (first args) (rest args)))
+        (format *standard-output* "~a"
+                (with-output-to-string (out)
+                  (uiop:run-program `(,(first args) ,@(rest args))
+                                    :output out
+                                    :error-output out))))
     ret))
 
 (defun clam-print (object)
