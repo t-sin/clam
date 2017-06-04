@@ -6,7 +6,7 @@
 (in-package :clam/main)
 
 (defun show-prompt ()
-  (format *standard-output* "~&clamshell$ ")
+  (format *standard-output* "~&clamshell $ ")
   (finish-output *standard-output*))
 
 (defvar *clam-delimiter* #(#\space #\tab))
