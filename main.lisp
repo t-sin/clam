@@ -57,10 +57,11 @@
 (defun get-command (name)
   (cdr (find name *clam-built-in-commands* :key #'car)))
 
-(define-command exit nil)
+(defvar +clam-status-exit+ (gensym))
+(define-command exit +clam-status-exit+)
 
-(defvar +clam-do-nothing+ (gensym))
-(define-command |:| +clam-do-nothing+)
+(defvar +clam-status-do-nothing+ (gensym))
+(define-command |:| +clam-status-do-nothing+)
 
 (defun clam-eval (args)
   (let* ((args (coerce args 'list))
@@ -72,16 +73,16 @@
     ret))
 
 (defun clam-print (object)
-  (when object
-    (unless (eq object +clam-do-nothing+)
+  (unless (eq object +clam-status-exit+)
+    (unless (eq object +clam-status-do-nothing+)
       (format *standard-output* "~s" object)
-      (finish-output *standard-output*))
-    object))
+      (finish-output *standard-output*)))
+  object)
 
 (defun clam-shell ()
   (loop
-     :for status :=  (handler-case
-                         (clam-print (clam-eval (clam-read)))
-                       (end-of-file ()
-                         (return-from clam-shell)))
-     :while status))
+     :for status := (handler-case
+                        (clam-print (clam-eval (clam-read)))
+                      (end-of-file ()
+                        (return-from clam-shell)))
+     :until (eq status +clam-status-exit+)))
