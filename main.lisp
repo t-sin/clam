@@ -63,6 +63,28 @@
 (defvar +clam-status-do-nothing+ (gensym))
 (define-command |:| +clam-status-do-nothing+)
 
+(define-command sframe
+  (let ((w (read-from-string (first args)))
+        (h (read-from-string (second args)))
+        (s (third args)))
+    (flet ((fills (s len)
+             (let ((slis (list s)))
+               (rplacd (last slis) slis)
+               (format nil "~v{~a~}" (ceiling (/ len (length s))) slis)))
+           (tol (s) (coerce s 'list)))
+      (let* ((len (* (+ w h) 2))
+             (s (fills s len)))
+        (format t "~{~a~%~}"
+                `(,(subseq s 0 (1+ w))
+                  ,@(mapcar (lambda (l) (coerce l 'string))
+                            (apply #'mapcar #'list
+                                   `(,(reverse (tol (subseq s (+ w h w 1) len)))
+                                     ,@(loop
+                                          :for i :from 0 :upto (- w 2)
+                                          :collect (tol (fills "　" (1- w))))
+                                     ,(tol (subseq s (1+ w) (+ w h))))))
+                  ,(reverse (subseq s (+ w h) (+ w h w 1)))))))))
+
 (defun clam-eval (args)
   (let* ((args (coerce args 'list))
          (ret t)
