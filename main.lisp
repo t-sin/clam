@@ -63,6 +63,13 @@
 (defvar +clam-status-do-nothing+ (gensym))
 (define-command |:| +clam-status-do-nothing+)
 
+(defvar +clam-help-string+
+  "CLAMCHOWDEEEEERRRRRRRR!!!
+
+This is a help message for clamshell.")
+(define-command help
+  (format t "~a~%" +clam-help-string+))
+
 (define-command sframe
   (let ((w (read-from-string (first args)))
         (h (read-from-string (second args)))
