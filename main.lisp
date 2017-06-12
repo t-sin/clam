@@ -92,7 +92,8 @@ This is a help message for clamshell.")
                                      ,(tol (subseq s (1+ w) (+ w h))))))
                   ,(reverse (subseq s (+ w h) (+ w h w 1)))))))))
 
-(defun clam-eval (args)
+(defun clam-eval (args &optional environment)
+  (print environment)
   (let* ((args (coerce args 'list))
          (ret t)
          (built-in-command (get-command (intern (string-downcase (first args)) :keyword))))
@@ -112,10 +113,20 @@ This is a help message for clamshell.")
       (finish-output *standard-output*)))
   object)
 
+(defun clam-init ()
+  (let ((environment nil))
+    (setf (getf environment :SHELL) "clam")
+    (setf (getf environment :USER) "cl-user")
+    (setf (getf environment :HOME) (user-homedir-pathname))
+    (setf (getf environment :PWD) (uiop:getcwd))
+    (setf (getf environment :PATH) '(#P"/bin/"))
+    environment))
+
 (defun clam-shell ()
-  (loop
-     :for status := (handler-case
-                        (clam-print (clam-eval (clam-read)))
-                      (end-of-file ()
-                        (return-from clam-shell)))
-     :until (eq status +clam-status-exit+)))
+  (let ((environment (clam-init)))
+    (loop
+       :for status := (handler-case
+                          (clam-print (clam-eval (clam-read) environment))
+                        (end-of-file ()
+                          (return-from clam-shell)))
+       :until (eq status +clam-status-exit+))))
