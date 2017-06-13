@@ -92,19 +92,33 @@ This is a help message for clamshell.")
                                      ,(tol (subseq s (1+ w) (+ w h))))))
                   ,(reverse (subseq s (+ w h) (+ w h w 1)))))))))
 
+(defun search-command (command path)
+  (if (probe-file command)
+      (pathname command)
+      (loop :named search
+         :for dir :in path
+         :for cmd-candidate := (merge-pathnames (make-pathname :name command) dir)
+         :with cmdpath := nil
+         :if (probe-file cmd-candidate)
+         :do (setf cmdpath cmd-candidate)
+         :finally (return-from search cmdpath))))
+
 (defun clam-eval (args &optional environment)
   (let* ((args (coerce args 'list))
          (ret t)
          (built-in-command (get-command (intern (string-downcase (first args)) :keyword))))
-    (if built-in-command
-        (setf ret (apply built-in-command (rest args)))
-        (if (probe-file (first args))
-            (format *standard-output* "~a"
-                    (with-output-to-string (out)
-                      (sb-ext:run-program (first args) (rest args)
-                                          :output out
-                                          :error out)))
-            (format *standard-output* "no such file: ~s~%" (first args))))
+    (if args
+        (if built-in-command
+            (setf ret (apply built-in-command (rest args)))
+            (let ((command (search-command (first args) (getf environment :PATH))))
+              (if command
+                  (format *standard-output* "~a"
+                          (with-output-to-string (out)
+                            (sb-ext:run-program command (rest args)
+                                                :output out
+                                                :error out)))
+                  (format *standard-output* "no such file: ~s~%" (first args)))))
+        ret)
     ret))
 
 (defun clam-print (object)
@@ -120,7 +134,7 @@ This is a help message for clamshell.")
     (setf (getf environment :USER) "cl-user")
     (setf (getf environment :HOME) (user-homedir-pathname))
     (setf (getf environment :PWD) (uiop:getcwd))
-    (setf (getf environment :PATH) '(#P"/bin"))
+    (setf (getf environment :PATH) '(#P"/bin/"))
     environment))
 
 (defun clam-shell ()
