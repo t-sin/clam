@@ -119,7 +119,7 @@ This is a help message for clamshell.")
     (setf (getf environment :USER) "cl-user")
     (setf (getf environment :HOME) (user-homedir-pathname))
     (setf (getf environment :PWD) (uiop:getcwd))
-    (setf (getf environment :PATH) '(#P"/bin/"))
+    (setf (getf environment :PATH) '(#P"/bin"))
     environment))
 
 (defun clam-shell ()
