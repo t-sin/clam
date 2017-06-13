@@ -5,6 +5,9 @@
   (:export :clam-shell))
 (in-package :clam/main)
 
+
+(defparameter *clam-environment* nil)
+
 (defun show-prompt ()
   (format *standard-output* "~&clamshell $ ")
   (finish-output *standard-output*))
@@ -103,22 +106,22 @@ This is a help message for clamshell.")
          :do (setf cmdpath cmd-candidate)
          :finally (return-from search cmdpath))))
 
-(defun clam-eval (args &optional environment)
+(defun clam-eval (args)
   (let* ((args (coerce args 'list))
          (ret t)
          (built-in-command (get-command (intern (string-downcase (first args)) :keyword))))
-    (if args
-        (if built-in-command
-            (setf ret (apply built-in-command (rest args)))
-            (let ((command (search-command (first args) (getf environment :PATH))))
-              (if command
-                  (format *standard-output* "~a"
-                          (with-output-to-string (out)
-                            (sb-ext:run-program command (rest args)
-                                                :output out
-                                                :error out)))
-                  (format *standard-output* "no such file: ~s~%" (first args)))))
-        ret)
+    (when args
+      (if built-in-command
+          (setf ret (apply built-in-command (rest args)))
+          (let ((command (search-command (first args)
+                                         (getf *clam-environment* :PATH))))
+            (if command
+                (format *standard-output* "~a"
+                        (with-output-to-string (out)
+                          (sb-ext:run-program command (rest args)
+                                              :output out
+                                              :error out)))
+                (format *standard-output* "no such file: ~s~%" (first args))))))
     ret))
 
 (defun clam-print (object)
@@ -138,10 +141,10 @@ This is a help message for clamshell.")
     environment))
 
 (defun clam-shell ()
-  (let ((environment (clam-init)))
+  (let ((*clam-environment* (clam-init)))
     (loop
        :for status := (handler-case
-                          (clam-print (clam-eval (clam-read) environment))
+                          (clam-print (clam-eval (clam-read)))
                         (end-of-file ()
                           (return-from clam-shell)))
        :until (eq status +clam-status-exit+))))
