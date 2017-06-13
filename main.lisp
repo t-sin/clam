@@ -93,17 +93,18 @@ This is a help message for clamshell.")
                   ,(reverse (subseq s (+ w h) (+ w h w 1)))))))))
 
 (defun clam-eval (args &optional environment)
-  (print environment)
   (let* ((args (coerce args 'list))
          (ret t)
          (built-in-command (get-command (intern (string-downcase (first args)) :keyword))))
     (if built-in-command
         (setf ret (apply built-in-command (rest args)))
-        (format *standard-output* "~a"
-                (with-output-to-string (out)
-                  (sb-ext:run-program (first args) (rest args)
-                                      :output out
-                                      :error out))))
+        (if (probe-file (first args))
+            (format *standard-output* "~a"
+                    (with-output-to-string (out)
+                      (sb-ext:run-program (first args) (rest args)
+                                          :output out
+                                          :error out)))
+            (format *standard-output* "no such file: ~s~%" (first args))))
     ret))
 
 (defun clam-print (object)
