@@ -101,9 +101,9 @@ This is a help message for clamshell.")
         (setf ret (apply built-in-command (rest args)))
         (format *standard-output* "~a"
                 (with-output-to-string (out)
-                  (uiop:run-program `(,(first args) ,@(rest args))
-                                    :output out
-                                    :error-output out))))
+                  (sb-ext:run-program (first args) (rest args)
+                                      :output out
+                                      :error out))))
     ret))
 
 (defun clam-print (object)
