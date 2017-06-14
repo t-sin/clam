@@ -89,6 +89,10 @@ This is a help message for clamshell.")
          :do (setf cmdpath cmd-candidate)
          :finally (return-from search cmdpath))))
 
+(defun check-executable (command)
+  (find-if (lambda (p) (search "EXEC" (symbol-name p)))
+           (osicat:file-permissions command)))
+
 (defun clam-eval (args)
   (let* ((args (coerce args 'list))
          (ret t)
@@ -98,7 +102,8 @@ This is a help message for clamshell.")
           (setf ret (apply built-in-command (rest args)))
           (let ((command (search-command (first args)
                                          (getf *clam-environment* :PATH))))
-            (if command
+            (if (and command
+                     (check-executable command))
                 (format *standard-output* "~a"
                         (with-output-to-string (out)
                           (sb-ext:run-program command (rest args)
