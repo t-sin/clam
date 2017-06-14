@@ -8,6 +8,26 @@
 
 (defparameter *clam-environment* nil)
 
+(defun clam-init ()
+  (let ((environment nil))
+    (setf (getf environment :SHELL) "clam")
+    (setf (getf environment :USER) (sb-posix:getenv "USER"))
+    (setf (getf environment :HOME) (user-homedir-pathname))
+    (setf (getf environment :PWD) (sb-posix:getenv "PWD"))
+    (setf (getf environment :PATH) '(#P"/bin/" #P"/usr/bin/"))
+    environment))
+
+(defun stringify-environment (env)
+  (flet ((stringify (k v)
+           (case k
+             (:PATH (format nil "~{~a~^:~}" v))
+             (t v))))
+    (loop
+       :for (k v) :on env :by #'cddr
+       :collect (format nil "~a=~a"
+                        (symbol-name k)
+                        (stringify k v)))))
+
 (defun show-prompt ()
   (format *standard-output* "~&clamshell $ ")
   (finish-output *standard-output*))
@@ -120,7 +140,8 @@ This is a help message for clamshell.")
                         (with-output-to-string (out)
                           (sb-ext:run-program command (rest args)
                                               :output out
-                                              :error out)))
+                                              :error out
+                                              :environment (stringify-environment *clam-environment*))))
                 (format *standard-output* "~a: command not found~%" (first args))))))
     ret))
 
@@ -130,15 +151,6 @@ This is a help message for clamshell.")
       (format *standard-output* "~s" object)
       (finish-output *standard-output*)))
   object)
-
-(defun clam-init ()
-  (let ((environment nil))
-    (setf (getf environment :SHELL) "clam")
-    (setf (getf environment :USER) "cl-user")
-    (setf (getf environment :HOME) (user-homedir-pathname))
-    (setf (getf environment :PWD) (uiop:getcwd))
-    (setf (getf environment :PATH) '(#P"/bin/"))
-    environment))
 
 (defun clam-shell ()
   (let ((*clam-environment* (clam-init)))
