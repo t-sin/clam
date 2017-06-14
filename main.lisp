@@ -121,7 +121,7 @@ This is a help message for clamshell.")
                           (sb-ext:run-program command (rest args)
                                               :output out
                                               :error out)))
-                (format *standard-output* "no such file: ~s~%" (first args))))))
+                (format *standard-output* "~a: command not found~%" (first args))))))
     ret))
 
 (defun clam-print (object)
