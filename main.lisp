@@ -30,16 +30,15 @@
                         (symbol-name k)
                         (stringify k v)))))
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defparameter *clam-built-in-commands* nil)
-  (defmacro define-command (name &body body)
-    (let ((%name (intern (string-downcase (symbol-name name)) :keyword)))
-      `(let ((command (cons ',%name #'(lambda (&rest args)
-                                        (declare (ignorable args))
-                                        ,@body))))
-         (pushnew command
-                  *clam-built-in-commands*
-                  :key #'car)))))
+(defparameter *clam-built-in-commands* nil)
+(defmacro define-command (name &body body)
+  (let ((%name (intern (string-downcase (symbol-name name)) :keyword)))
+    `(let ((command (cons ',%name #'(lambda (&rest args)
+                                      (declare (ignorable args))
+                                      ,@body))))
+       (pushnew command
+                *clam-built-in-commands*
+                :key #'car))))
 
 (defun get-command (name)
   (cdr (find name *clam-built-in-commands* :key #'car)))
