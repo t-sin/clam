@@ -106,10 +106,11 @@ This is a help message for clamshell.")
                      (check-executable command))
                 (format *standard-output* "~a"
                         (with-output-to-string (out)
-                          (sb-ext:run-program command (rest args)
-                                              :output out
-                                              :error out
-                                              :environment (stringify-environment *clam-environment*))))
+                          (setf ret (sb-ext:process-exit-code
+                                     (sb-ext:run-program command (rest args)
+                                                         :output out
+                                                         :error out
+                                                         :environment (stringify-environment *clam-environment*))))))
                 (format *standard-output* "~a: command not found~%" (first args))))))
     ret))
 
