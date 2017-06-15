@@ -87,7 +87,7 @@ This is a help message for clamshell.")
          :with cmdpath := nil
          :if (probe-file cmd-candidate)
          :do (setf cmdpath cmd-candidate)
-         :finally (return-from search cmdpath))))
+         :finally (return-from search (or (probe-file command) cmdpath)))))
 
 (defun check-executable (command)
   (find-if (lambda (p) (search "EXEC" (symbol-name p)))
