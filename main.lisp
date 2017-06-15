@@ -49,6 +49,12 @@
 (defvar +clam-status-do-nothing+ (gensym))
 (define-command |:| +clam-status-do-nothing+)
 
+(define-command cd
+  (let ((path (first args)))
+    (when path
+      (let ((dir (truename path)))
+        (setf (getf *clam-environment* :PWD) dir)))))
+
 (defvar +clam-help-string+
   "CLAMCHOWDEEEEERRRRRRRR!!!
 
