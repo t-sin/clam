@@ -7,6 +7,14 @@
   (:export :clam-shell))
 (in-package :clam/main)
 
+(defparameter *clam-launch-message*
+  "
+  ____ _        _   __  __            _          _ _
+ / ___| |      / \\ |  \\/  |       ___| |__   ___| | |
+| |   | |     / _ \\| |\\/| |      / __| '_ \\ / _ \\ | |
+| |___| |___ / ___ \\ |  | |      \\__ \\ | | |  __/ | |
+ \\____|_____/_/   \\_\\|  |_| is a |___/_| |_|\\___|_|_|
+")
 
 (defparameter *clam-environment* nil)
 
@@ -129,6 +137,7 @@ This is a help message for clamshell.")
 
 (defun clam-shell ()
   (let ((*clam-environment* (clam-init)))
+    (format t "~a~%" *clam-launch-message*)
     (loop
        :for status := (handler-case
                           (clam-print (clam-eval (clam-read)))
